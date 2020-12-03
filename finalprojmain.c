@@ -1,75 +1,109 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <process.h>
 #include "finalproj.h"
-#include "finalproj.c"
 void main(){
-    initializeTournament();
-    //Initialize game board model
-    int numRows = 0; int numColumns = 0;
-    printf("Please enter a size of board: 5X5,6X6, or 8X8");
+    //Initialize Tournament
+    //FIX ME
+    int numGames = 0; 
+    printf("How many games would you like to play?");
+    scanf("%d",&numGames);
+    int** tournamentScore = initializeTournament(numGames);
+    int numRows = 0; 
+    int numColumns = 0;
+    printf("Please enter a size of board: 5 5, or 6 6");
     scanf("%d %d",&numRows,&numColumns);
     int r = numRows;
     int c = numColumns; 
-    int *gameArray = (int *)malloc(r * c * sizeof(int));
     //Allow player selection 
     PlayerInformation player1;
-    setPlayerInformation(player1);
+    setPlayerInformation(&player1);
     PlayerInformation player2;
-    setPlayerInformation(player2);
- 
-    //Initialize player model
-    //char playermodel[2][2]; 
-    //Initialize the game loop
+    setPlayerInformation(&player2);
+    createDisplayArea(player1);
+    createDisplayArea(player2);
+    int gameCount = 0;
+    //GAME LOOP
     char playagain = 'y';
     while(playagain == 'y'){
+        int **gameArray = (int **)malloc(r * sizeof(int*)); 
+        for (int i = 0;i < r;i++){
+            gameArray[i] = malloc(c*sizeof(int));
+        } 
+        for (int i = 0; i < r; i++){ 
+            for (int j = 0; j < c; j++){ 
+                gameArray[i][j] = 0;
+            }
+        }
         int victory = 0; 
-        int currentPlayer = 1;
+        char saveGameChar = 'n';
         while(victory == 0){ 
-            int currentColumn = playerTurn();
-            updateBoard(gameArray,r,currentColumn,currentPlayer);
-            //update column in FormatViewArray
-           /*  switch(r) {
-                case '5':
-                    display5x5GameBoard();
-                    break; //optional
-                case '6':
-                    display6x6GameBoard();
-                    break; //optional
-                case '8':
-                    display8x8GameBoard();
-                    break; //optional
-            } */
-            //UNCOMMENT TO TEST FOR VICTORY//
-           /*  int *testArray = (int *)malloc(r * c * sizeof(int)); 
-            int i = 0;
-            int j = 0; 
-            for (i = 0; i < 1; i++){ 
-            for (j = 0; j < 4; j++){ 
-                   *(testArray + i*c + j) = 1; 
-                 }
-            } */
-            victory = testForWin(gameArray,r,c);
-
-            if(currentPlayer == 1){
-                currentPlayer = 2;
-            }  
+            printf("Would you like to save the game? (y/n)");
+            while ((getchar()) != '\n');
+            scanf("%c",&saveGameChar);
+            if(saveGameChar == 'y'){
+                saveGame(gameArray,r,c);
+            }
+            int currentColumn = playerTurn(r);
+            updateBoard(gameArray,r,currentColumn,1);
+            char** formatView = formatViewArray(gameArray,r,c,player1,player2);
+            printf("%s TURN\n",&player1.name);
+            if(r==5){
+                 display5x5GameBoard(formatView);
+            }
             else{
-                currentPlayer = 1;
-            }        
+                 display6x6GameBoard(formatView);
+            }
+            victory = testForWin(gameArray,r,c);
+            if(victory == 1){
+                displayVictoryMessage(victory,player1);
+                tournamentScore[gameCount][0]=1;
+                break;
+            }
+            currentColumn = computerTurn(gameArray,r,c);
+            updateBoard(gameArray,r,currentColumn,2);
+            formatView = formatViewArray(gameArray,r,c,player1,player2);
+            printf("%s TURN\n",&player2.name);
+            if(r==5){
+                 display5x5GameBoard(formatView);
+            }
+            else{
+                 display6x6GameBoard(formatView);
+            }
+            victory = testForWin(gameArray,r,c);
+            if(victory == 1){
+                displayVictoryMessage(victory,player2);
+                tournamentScore[gameCount][1]=1;
+            }
         }
-        if(currentPlayer == 1){
-            displayVictoryMessage(victory,player1); 
-        }
-        else{
-            displayVictoryMessage(victory,player2); 
-        }
+    gameCount++;
+    if(gameCount >= numGames){
+        break;
     }
-    //Player turn 
+    printf("Would you like to play again (y/n)");
+    while ((getchar()) != '\n');
+    scanf("%c",&playagain);
+    } 
+int player1Count = 0;
+int player2Count = 0;
+for (int i = 0; i < numGames; i++){ 
+    //*(arr + i*c + j) = 0; 
+    if(tournamentScore[i][0] == 1){
+        player1Count++;
+    };
+}
+for (int i = 0; i < numGames; i++){ 
+    //*(arr + i*c + j) = 0; 
+    if(tournamentScore[i][1] == 1){
+        player2Count++;
+    };
+}
+if(player1Count > player2Count){
+    printf("Player %s wins the tournament",&player1.name);
+}
+else{
+    printf("Player %s wins the tournament",&player2.name);
+}
 
-    //Update model with column selection (1s and 0s)
-    
-    //FormatViewArray 
-
-   
-
-    //Call view to update board 
-
-} 
+system("pause");
+}        
