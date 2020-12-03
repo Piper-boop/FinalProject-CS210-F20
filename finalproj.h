@@ -4,7 +4,9 @@
 * Section: M3/4A
 * Project: Final Project - Connect 4
 * Description: A game where you connect 4 chits
-* Documentation Statement: C3C Jcob Dunn helped me figure out how to pass a 2D array. 
+* Documentation Statement: C3C Jcob Dunn helped me figure out how to pass a 2D array.I talked to Garth
+* Knutson about how to use File IO but no code was exchanged. I used GeeksforGeeks to learn how to use the break
+* commmand properly. 
 * ==============================================================
 * UserManual/Instructions:
 *   Simply follow all commands given by the game software.
